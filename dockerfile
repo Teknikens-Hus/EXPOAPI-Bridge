@@ -58,4 +58,5 @@ WORKDIR /home/app/expoapi-bridge
 EXPOSE 8080
 
 # Command to update the crontab, start cron and the web server
-ENTRYPOINT ["/home/app/expoapi-bridge/entrypoint.sh"]
+ENTRYPOINT ["/home/app/expoapi-bridge/entrypoint.sh"]
+#ENTRYPOINT ["tail", "-f", "/dev/null"]
