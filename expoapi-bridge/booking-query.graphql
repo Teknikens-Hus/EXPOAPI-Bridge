@@ -1,0 +1,61 @@
+query GetBookings($startAtGteq: DateTime!, $endAtLteq: DateTime!) {
+  bookings(search: {reservationsStartAtGteq: $startAtGteq, reservationsEndAtLteq: $endAtLteq}) {
+    nodes {
+      humanNumber
+      state
+      firstName
+      lastName
+      email
+      message
+      organisation
+      externalComment
+      internalComment
+      createdAt
+      updatedAt
+      bookingType {
+        id
+        name
+        position
+      }
+      reservations {
+        totalNodeCount
+        nodes {
+          startAt
+          endAt
+          contract {
+            name
+          }
+          attendees {
+            totalNodeCount
+            nodes {
+              attendeeType {
+                name
+              }
+            }
+          }
+          event {
+            name
+            startAt
+            endAt
+            eventAllocation {
+              eventAllocationResources {
+                totalNodeCount
+                nodes {
+                  resource {
+                    name
+                    resourceType {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+            offer {
+              name
+            }
+          }
+        }
+      }
+    }
+  }
+}

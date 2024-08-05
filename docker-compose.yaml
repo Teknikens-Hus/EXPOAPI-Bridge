@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  expoapi-bridge:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      TOKEN: ${TOKEN}
+      ENDPOINT: ${ENDPOINT}
+      DAYS_FORWARD: "7"
+      DAYS_BACKWARD: "0"
+      CRON_SCHEDULE: "0 * * * *"
+      TZ: "Europe/Stockholm"
+    restart: unless-stopped

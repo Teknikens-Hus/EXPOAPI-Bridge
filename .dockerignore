@@ -1,0 +1,9 @@
+
+dockerfile
+docker-compose.yaml
+**/debug_response.json
+**/processed_data.json
+**/write_response_to_file_for_debug.py
+.dockerignore
+**/__pycache__
+**/secrets.yaml
