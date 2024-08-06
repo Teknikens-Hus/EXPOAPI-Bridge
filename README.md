@@ -10,8 +10,6 @@ Currently amd64 and x86_64 are supported with their each image.
 
 Use the example docker-compose as a reference to run the project.
 ```yaml
-version: '3.8'
-
 services:
   expoapi-bridge:
     image: temp:latest
