@@ -8,7 +8,7 @@ This project uses that API to fetch bookings and publish the results using a web
 ## Installation
 Currently amd64 and arm64 are supported.
 
-### Docker / docker-compose
+### Docker / docker-compose:
 [![Docker Icon](https://skillicons.dev/icons?i=docker&theme=light)](./Examples/Docker/README.md)
 
 ### Kubernetes Deployment:
