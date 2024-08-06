@@ -127,8 +127,7 @@ data:
 ```
 To apply the secret using kubectl:
 ```bash
-kubectl create secret generic expoapi-bridge --from-literal=token=<token> --from
--literal=endpoint=<endpoint>
+kubectl create secret generic expoapi-bridge --namespace=expoapi-bridge --from-literal=token=<token> --from-literal=endpoint=<endpoint>
 ```
 **NOTE:** Also remove the secret.yaml from the kustomization.yaml file if you are using kubectl to create the secret.
 
