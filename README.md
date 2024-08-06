@@ -8,22 +8,9 @@ This project uses that API to fetch bookings and publish the results using a web
 ## How to run
 Currently amd64 and x86_64 are supported with their each image.
 
-Use the example docker-compose as a reference to run the project.
-```yaml
-services:
-  expoapi-bridge:
-    image: temp:latest
-    ports:
-      - "8080:8080"
-    environment:
-      TOKEN: ${TOKEN}
-      ENDPOINT: ${ENDPOINT}
-      DAYS_FORWARD: "7"
-      DAYS_BACKWARD: "0"
-      CRON_SCHEDULE: "0 * * * *"
-      TZ: "Europe/Stockholm"
-    restart: unless-stopped
-```
+Docker / docker-compose
+[See Docker example](https://github.com/Teknikens-Hus/EXPOAPI-Bridge/blob/main/Examples/Docker/README.md)
+
 You can specify your *ENDPOINT* and *TOKEN* in an .env file in the same directory as the docker-compose file:
 ```bash
 TOKEN: "Your token"
