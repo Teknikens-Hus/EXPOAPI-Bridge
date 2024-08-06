@@ -11,16 +11,6 @@ Currently amd64 and x86_64 are supported with their each image.
 Docker / docker-compose
 [See Docker example](https://github.com/Teknikens-Hus/EXPOAPI-Bridge/blob/main/Examples/Docker/README.md)
 
-You can specify your *ENDPOINT* and *TOKEN* in an .env file in the same directory as the docker-compose file:
-```bash
-TOKEN: "Your token"
-ENDPOINT: "https://yourbooking.endpoint.se/api/v2/graphql"
-```
-You can genrerate a token as an admin in the EXPO Booking admin panel by logging in to the admin panel then: System -> Administrators -> Your user -> Edit -> Access Tokens -> Pick a name and press create.
-
-## Optional:
-You can also specify how many days forward and backward you want to fetch bookings for. The default is 7 days forward and 0 days backward.
-You can also specify a cron schedule for how often you want to fetch bookings. The default is every hour.
 
 # Dependencies
 The project uses:
