@@ -5,6 +5,9 @@ Fetches booking from EXPO Bookings using their API and publishes the results usi
 [EXPO BOOKING](https://www.expobooking.info/) uses GraphQL API to fetch bookings.
 This project uses that API to fetch bookings and publish the results using a webserver on port 8080. This data can then be parsed locally by other services. Eg to display bookings in a calendar.
 
+## MQTT 
+This project also supports (a crude implementation) of publishing the bookings to an MQTT broker. See required env variables in installation section.
+
 ## Installation
 Currently amd64 and arm64 are supported.
 

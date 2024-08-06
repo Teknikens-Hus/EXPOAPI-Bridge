@@ -47,6 +47,32 @@ spec:
               # Default to run every hour
             - name: CRON_SCHEDULE
               value: "0 * * * *"
+              # Enable MQTT by setting this to true
+            - name: MQTT_ENABLED
+              value: "false"
+              # Required if MQTT_ENABLED is true. Set to your broker IP
+            - name: MQTT_HOST
+              value: "0.0.0.0"
+              # Default is 1883
+            - name: MQTT_PORT
+              value: "1883"
+              # The base topic to publish to
+            - name: MQTT_TOPIC
+              value: "expoapi-bridge"
+              # The username for authentication
+            - name: MQTT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: expoapi-bridge
+                  namespace: expoapi-bridge
+                  key: MQTT_USERNAME
+              # The password for authentication
+            - name: MQTT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: expoapi-bridge
+                  namespace: expoapi-bridge
+                  key: MQTT_PASSWORD
               # Update to your timezone
             - name: TZ
               value: Europe/Stockholm

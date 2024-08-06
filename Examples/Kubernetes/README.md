@@ -52,6 +52,32 @@ spec:
               # Default to run every hour
             - name: CRON_SCHEDULE
               value: "0 * * * *"
+              # Enable MQTT by setting this to true
+            - name: MQTT_ENABLED
+              value: "false"
+              # Required if MQTT_ENABLED is true. Set to your broker IP
+            - name: MQTT_HOST
+              value: "0.0.0.0"
+              # Default is 1883
+            - name: MQTT_PORT
+              value: "1883"
+              # The base topic to publish to
+            - name: MQTT_TOPIC
+              value: "expoapi-bridge"
+              # The username for authentication
+            - name: MQTT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: expoapi-bridge
+                  namespace: expoapi-bridge
+                  key: MQTT_USERNAME
+              # The password for authentication
+            - name: MQTT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: expoapi-bridge
+                  namespace: expoapi-bridge
+                  key: MQTT_PASSWORD
               # Update to your timezone
             - name: TZ
               value: Europe/Stockholm
@@ -125,10 +151,29 @@ data:
   token: <base64-encoded-token>
   endpoint: <base64-encoded-endpoint>
 ```
+Or if you are using MQTT:
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: expoapi-bridge
+type: Opaque
+data:
+  token: <base64-encoded-token>
+  endpoint: <base64-encoded-endpoint>
+  MQTT_USERNAME: <base64-encoded-mqtt-username>
+  MQTT_PASSWORD: <base64-encoded-mqtt-password>
+```
+
 To apply the secret using kubectl:
 ```bash
 kubectl create secret generic expoapi-bridge --namespace=expoapi-bridge --from-literal=token=<token> --from-literal=endpoint=<endpoint>
 ```
+or if you are using MQTT:
+```bash
+kubectl create secret generic expoapi-bridge --namespace=expoapi-bridge --from-literal=token=<token> --from-literal=endpoint=<endpoint> --from-literal=MQTT_USERNAME=<mqtt-username> --from-literal=MQTT_PASSWORD=<mqtt-password>
+```
+
 **NOTE:** Also remove the secret.yaml from the kustomization.yaml file if you are using kubectl to create the secret.
 
 ## How to get a token:
@@ -138,3 +183,6 @@ You can generate a token as an admin in the EXPO Booking admin panel by logging 
 - DAYS_FORWARD: The number of days forward you want to fetch bookings for. Default is 7.
 - DAYS_BACKWARD: The number of days backward you want to fetch bookings for. Default is 0.
 - CRON_SCHEDULE: The cron schedule for how often you want to fetch bookings. Default is every hour.
+- TZ: The timezone you want to use. Default is Europe/Stockholm.
+- MQTT_PORT: The port you want to use for MQTT. Default is 1883.
+- MQTT_TOPIC: The topic you want to publish to. Default is "expoapi-bridge".

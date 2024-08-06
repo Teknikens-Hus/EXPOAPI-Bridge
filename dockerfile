@@ -32,7 +32,9 @@ ENV supercronic /usr/local/bin/supercronic
 RUN python3 -m venv /home/app/expoapi-bridge/venv \
 && . /home/app/expoapi-bridge/venv/bin/activate \
 && pip install --upgrade pip \
-&& pip install requests
+&& pip install requests \
+&& pip install PyYAML \
+&& pip install paho-mqtt==2.1
 
 # Add local user so we don't run as root
 RUN addgroup -g 2001 app \

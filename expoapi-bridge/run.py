@@ -1,5 +1,8 @@
 from process_data_response import process_data
 from get_data_from_expo import fetch_data_from_graphql
+from mqtt_publish import MQTTClient
+import time
+
 import json
 import os
 import logging
@@ -12,6 +15,7 @@ token = os.getenv('TOKEN')
 endpoint = os.getenv('ENDPOINT')
 days_forward = os.getenv('DAYS_FORWARD', '7') # Default to 7 days
 days_backward = os.getenv('DAYS_BACKWARD', '0') # Default to 0 days (Today)
+mqtt_enabled = os.getenv('MQTT_ENABLED', 'false') # Default to false
 
 file_path = '/home/app/expoapi-bridge/processed_data.json'
 
@@ -47,3 +51,21 @@ else:
     with open(file_path, 'w') as outfile:
         json.dump(newdata, outfile, indent=4)
     logging.log(logging.INFO, "Data fetched and processed successfully for dates: {} to {}".format(start_date, end_date))
+
+# Publish data to MQTT if enabled in environment variables
+if(mqtt_enabled == 'true'):
+    mqtt_client = MQTTClient()
+    ## Loop until the MQTT client is connected
+    if mqtt_client.mqtt_client is not None:
+        while not mqtt_client.mqtt_connected:
+            time.sleep(1)
+        # Publish the data to the MQTT broker
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+            mqtt_client.publish("current_bookings", json.dumps(data))
+        # Wait for confirmation that the data was published
+        while not mqtt_client.mqtt_message_sent:
+            time.sleep(1)
+        mqtt_client.disconnect()
+    else:
+        logging.error("MQTT client did not initialize correctly")

@@ -1,2 +1,3 @@
 requests
-yaml
+PyYAML
+paho-mqtt

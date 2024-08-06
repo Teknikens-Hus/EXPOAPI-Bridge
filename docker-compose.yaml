@@ -8,6 +8,12 @@ services:
       ENDPOINT: ${ENDPOINT}
       DAYS_FORWARD: "7"
       DAYS_BACKWARD: "0"
-      CRON_SCHEDULE: "0 * * * *"
+      CRON_SCHEDULE: "* * * * *"
+      MQTT_ENABLED: "true"
+      MQTT_HOST: ${MQTT_HOST}
+      MQTT_PORT: ${MQTT_PORT}
+      MQTT_USERNAME: ${MQTT_USERNAME}
+      MQTT_PASSWORD: ${MQTT_PASSWORD}
+      MQTT_TOPIC: "expoapi-bridge"
       TZ: "Europe/Stockholm"
     restart: unless-stopped
