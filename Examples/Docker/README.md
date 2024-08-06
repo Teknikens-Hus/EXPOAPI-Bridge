@@ -42,9 +42,10 @@ ENDPOINT: "https://yourbooking.endpoint.se/api/v2/graphql"
 ```
 These will then be referenced by the compose file.
 
-You can genrerate a token as an admin in the EXPO Booking admin panel by logging in to the admin panel then: System -> Administrators -> Your user -> Edit -> Access Tokens -> Pick a name and press create.
+## How to get a token:
+You can generate a token as an admin in the EXPO Booking admin panel by logging in to the admin panel then: System -> Administrators -> Your user -> Edit -> Access Tokens -> Pick a name and press create.
 
-## Optional:
+## Optional environment variables:
 - DAYS_FORWARD: The number of days forward you want to fetch bookings for. Default is 7.
 - DAYS_BACKWARD: The number of days backward you want to fetch bookings for. Default is 0.
 - CRON_SCHEDULE: The cron schedule for how often you want to fetch bookings. Default is every hour.

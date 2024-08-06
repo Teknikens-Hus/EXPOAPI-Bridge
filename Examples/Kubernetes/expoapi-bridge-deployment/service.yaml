@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expoapi-bridge
+  labels:
+    app: expoapi-bridge
+spec:
+  type: LoadBalancer
+  loadBalancerIP: <your-ip>
+  ports:
+    - port: 8080
+      targetPort: webserver
+  selector:
+    app: expoapi-bridge

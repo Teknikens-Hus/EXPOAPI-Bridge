@@ -5,12 +5,14 @@ Fetches booking from EXPO Bookings using their API and publishes the results usi
 [EXPO BOOKING](https://www.expobooking.info/) uses GraphQL API to fetch bookings.
 This project uses that API to fetch bookings and publish the results using a webserver on port 8080. This data can then be parsed locally by other services. Eg to display bookings in a calendar.
 
-## How to run
-Currently amd64 and x86_64 are supported with their each image.
+## Installation
+Currently amd64 and arm64 are supported.
 
-Docker / docker-compose
-[See Docker example](https://github.com/Teknikens-Hus/EXPOAPI-Bridge/blob/main/Examples/Docker/README.md)
+### Docker / docker-compose
+[![Docker Icon](https://skillicons.dev/icons?i=docker&theme=light)](./Examples/Docker/README.md)
 
+### Kubernetes Deployment:
+[![Kube Icon](https://skillicons.dev/icons?i=kubernetes&theme=light)](./Examples/Kubernetes/README.md)
 
 # Dependencies
 The project uses:
