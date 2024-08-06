@@ -6,7 +6,7 @@ USER root
 # Install dependencies
 RUN apk update \
     && apk upgrade \
-    && apk --no-cache add libcap python3 py3-pip tzdata curl
+    && apk --no-cache add libcap python3 py3-pip tzdata curl dos2unix
 
 # Determine the architecture and set the appropriate URL and SHA1SUM
 RUN ARCH=$(uname -m) && \
@@ -43,6 +43,9 @@ RUN mkdir -p /home/app/expoapi-bridge
 
 # Copy the program files
 COPY --chown=app:app ./expoapi-bridge /home/app/expoapi-bridge
+
+# Run dos2unix to fix windows line endings issue with entrypoint not being found
+RUN dos2unix /home/app/expoapi-bridge/entrypoint.sh
 
 # Set permissions for the user's home directory and crond
 RUN chown app:app /home/app/expoapi-bridge
