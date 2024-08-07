@@ -22,13 +22,13 @@ file_path = '/home/app/expoapi-bridge/processed_data.json'
 # Ensure the directory exists
 os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-def calculate_start_end_dates():
+def calculate_start_end_dates(forward, backward):
     """
     Calculate the start and end dates based on the days_forward and days_backward
     """
     # Correct format ex: 2024-06-10
-    start_date = (datetime.now().date() - timedelta(days=int(days_backward))).strftime("%Y-%m-%d")
-    end_date = (datetime.now().date() + timedelta(days=int(days_forward))).strftime("%Y-%m-%d")
+    start_date = (datetime.now().date() - timedelta(days=int(backward))).strftime("%Y-%m-%d")
+    end_date = (datetime.now().date() + timedelta(days=int(forward))).strftime("%Y-%m-%d")
     return start_date, end_date
 
 # make a check that the variables are not empty
@@ -44,8 +44,7 @@ if not token or not endpoint:
     with open(file_path, 'w') as outfile:
         json.dump({"error": error_message}, outfile, indent=4)
 else:
-    logging.log(logging.INFO, "Fetching data from Expo's GraphQL API...")
-    start_date, end_date = calculate_start_end_dates()
+    start_date, end_date = calculate_start_end_dates(days_forward, days_backward)
     newdata = process_data(fetch_data_from_graphql(start_date, end_date, token, endpoint))
     # Save the new data to a file
     with open(file_path, 'w') as outfile:
@@ -59,6 +58,7 @@ if(mqtt_enabled == 'true'):
     if mqtt_client.mqtt_client is not None:
         while not mqtt_client.mqtt_connected:
             time.sleep(1)
+            logging.log(logging.INFO, "Waiting for MQTT client to connect...")
         # Publish the data to the MQTT broker
         with open(file_path, 'r') as file:
             data = json.load(file)
@@ -66,6 +66,7 @@ if(mqtt_enabled == 'true'):
         # Wait for confirmation that the data was published
         while not mqtt_client.mqtt_message_sent:
             time.sleep(1)
+            logging.log(logging.INFO, "Waiting for MQTT message to be sent...")
         mqtt_client.disconnect()
     else:
         logging.error("MQTT client did not initialize correctly")

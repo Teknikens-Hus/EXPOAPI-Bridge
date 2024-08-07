@@ -23,6 +23,7 @@ def fetch_data_from_graphql(start_date, end_date, auth_token, endpoint):
     }
     #print(f"Sending request to Expo's GraphQL API at endpoint: {endpoint} with token: {auth_token}")
     # Send the request
+    logging.log(logging.INFO, "Fetching data from Expo's GraphQL API...")
     response = requests.post(endpoint, json={"query": query, "variables": variables}, headers=headers)
 
     # Check if the request was successful

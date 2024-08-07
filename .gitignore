@@ -162,3 +162,5 @@ cython_debug/
 #.idea/
 **/debug_response.json
 **/secrets.yaml
+
+**/*.json
