@@ -2,6 +2,7 @@ name: docker-build-and-release
 
 permissions:
   packages: write
+  contents: write # Required to create release
 
 on:
   push:
@@ -37,4 +38,19 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/${{ env.REGISTRY_IMAGE }}:latest
+          tags: |
+            ghcr.io/${{ env.REGISTRY_IMAGE }}:latest
+            ghcr.io/${{ env.REGISTRY_IMAGE }}:0.1.${{ github.run_number }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          tag_name: 0.1.${{ github.run_number }}
+          name: Release 0.1.${{ github.run_number }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
