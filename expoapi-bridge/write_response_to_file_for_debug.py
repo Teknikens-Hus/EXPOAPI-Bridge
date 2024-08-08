@@ -1,6 +1,8 @@
-from get_data_from_expo import fetch_data_from_graphql
+from get_data_from_expo import request_data_from_graphql
 from run import calculate_start_end_dates
 from process_data_response import process_data
+from bookingObject import Booking
+from bookingObject import BookingFromProcessedJSON
 import json
 import yaml
 import os
@@ -34,7 +36,8 @@ def write_response_to_file_for_debug(jsondata, filename):
 def get_new_debug_data():
     # Get dates from the calculate_start_end_dates function
     start_date, end_date = calculate_start_end_dates(days_forward, days_backward)
-    data = fetch_data_from_graphql(start_date, end_date, token, endpoint)
+    print(f"New data at: Start date: {start_date}, End date: {end_date}")
+    data = request_data_from_graphql(start_date, end_date, token, endpoint)
 
     write_response_to_file_for_debug(data, 'raw_data.json')
     write_response_to_file_for_debug(process_data(data), 'processed_data.json')
@@ -59,18 +62,18 @@ def find_key(obj, result_array, target_key):
             find_key(item, result_array, target_key)
 
 
-human_numbers_raw = []
-bookingIDs_processed = []
-startTime_processed = []
 
 raw_data = read_json('raw_data.json')
 processed_data = read_json('processed_data.json')
 
-find_key(raw_data, human_numbers_raw, 'humanNumber')
-find_key(processed_data, bookingIDs_processed, 'bookingID')
-find_key(processed_data, startTime_processed, 'startTime')
+# Make booking objects
+Bookings = []
 
-print(len(human_numbers_raw))
-print(len(bookingIDs_processed))
-print(len(startTime_processed))
+for jsonBooking in processed_data['bookings']:
+    #print(booking)
+    Bookings.append(BookingFromProcessedJSON(jsonBooking))
+print("Number of bookings {}".format(len(Bookings)))
 
+for booking in Bookings:
+    if booking.organisation is not None:
+        print(booking.bookingID + " " + booking.organisation)

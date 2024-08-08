@@ -1,5 +1,5 @@
 from process_data_response import process_data
-from get_data_from_expo import fetch_data_from_graphql
+from get_data_from_expo import request_data_from_graphql
 from mqtt_publish import MQTTClient
 import time
 
@@ -45,11 +45,13 @@ if not token or not endpoint:
         json.dump({"error": error_message}, outfile, indent=4)
 else:
     start_date, end_date = calculate_start_end_dates(days_forward, days_backward)
-    newdata = process_data(fetch_data_from_graphql(start_date, end_date, token, endpoint))
+    newdata = request_data_from_graphql(start_date, end_date, token, endpoint)
+    # Only process the data if there is no error
+    if 'error' not in newdata:
+        newdata = process_data(newdata)
     # Save the new data to a file
     with open(file_path, 'w') as outfile:
-        json.dump(newdata, outfile, indent=4)
-    logging.log(logging.INFO, "Data fetched and processed successfully for dates: {} to {}".format(start_date, end_date))
+        json.dump(newdata, outfile)
 
 # Publish data to MQTT if enabled in environment variables
 if(mqtt_enabled == 'true'):
