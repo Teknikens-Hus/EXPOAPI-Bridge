@@ -1,0 +1,18 @@
+query GetBookingTypes{
+  bookingTypes{
+    totalNodeCount
+    totalPageCount
+    pageInfo{
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    nodes{
+      id
+      name
+      position
+      description
+    }
+  }
+}

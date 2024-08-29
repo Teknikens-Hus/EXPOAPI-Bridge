@@ -1,0 +1,18 @@
+query GetBookingTypes($cursor: String){
+  bookingTypes(after: $cursor){
+    totalNodeCount
+    totalPageCount
+    pageInfo{
+      hasNextPage
+      hasPreviousPage
+      startCursor
+      endCursor
+    }
+    nodes{
+      id
+      name
+      position
+      description
+    }
+  }
+}

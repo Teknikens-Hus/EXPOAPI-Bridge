@@ -4,36 +4,11 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-def process_data(jsondata):
-    allBookings = []
-    #for booking in jsondata['bookings']:
-    bookings = len(jsondata['data']['bookings']['nodes'])
-    logging.log(logging.INFO, f"Found {bookings} bookings")
-    
-    # Create a new booking in the new easier format for each booking
-    for booking in jsondata['data']['bookings']['nodes']:
-        allBookings.append(create_booking(booking))
-    
-        # Split the bookings into confirmed and rejected
-    confirmedBookings = []
-    rejectedBookings = []
-
-    for booking in allBookings:
-        if booking['bookingState'] == 'confirmed':
-            confirmedBookings.append(booking)
-        else:
-            rejectedBookings.append(booking)
-        
-    logging.log(logging.INFO, f"Confirmed bookings: {len(confirmedBookings)}")
-    logging.log(logging.INFO, f"Rejected bookings: {len(rejectedBookings)}")
-
-    # Sort the confirmedBookings by the earliest reservation start time
-    confirmedBookings.sort(key=lambda x: get_start_time(get_earliest_reservation(x['reservations'])))
-
-    # Combine the confirmed and rejected bookings into one list
-    allBookings = confirmedBookings + rejectedBookings
-    
-    return_data = {"fetched_timestamp": get_current_time(), "bookings": allBookings}
+def processCombinedData(jsonBookings, jsonBookingTypes):
+    allBookingTypes = processBookingTypes(jsonBookingTypes)
+    allBookings = processBookings(jsonBookings)
+   
+    return_data = {"fetched_timestamp": get_current_time(), "bookingTypes": allBookingTypes, "bookings": allBookings}
     
     # Check the data
     try:
@@ -59,7 +34,7 @@ def get_current_time():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 ### Creates a new booking in the new easier format
-def create_booking(booking):
+def formatBookingData(booking):
     bookingID = booking['humanNumber']
     bookingState = booking['state']
     #if(bookingState != 'confirmed'):
@@ -83,7 +58,6 @@ def create_booking(booking):
         offer = event['offer']['name']
         if(reservation['contract'] != None):
              contract = reservation['contract']['name']
-
         # Format attendees data
         attendees = {"Attendees": 0}
         if(reservation['attendees']['totalNodeCount'] != 0):
@@ -96,7 +70,6 @@ def create_booking(booking):
                     tempAttendees[attendeeType] = 1
             # Set formated attendee data
             attendees = tempAttendees
-        
         resources = []
         if(event['eventAllocation'] != None):
              if event['eventAllocation']['eventAllocationResources']['totalNodeCount'] != 0:
@@ -109,5 +82,41 @@ def create_booking(booking):
             resources = None
         # Set reservation data
         reservations.append({"startTime": startTime, "endTime": endTime, "contract": contract, "attendees": attendees, "resources": resources})
-    
     return {"bookingID": bookingID, "bookingState": bookingState, "firstName": firstName, "lastName": lastName, "email": email, "messageFromBooker": messageFromBooker, "externalComment": externalComment, "internalComment": internalComment, "bookingType": bookingType, "organisation": organisation, "reservations": reservations}
+
+def processBookings(jsonBookings):
+    formattedBookings = []
+    bookings = len(jsonBookings['data']['bookings']['nodes'])
+    logging.log(logging.INFO, f"Found {bookings} bookings")
+    
+    # Create a new booking in the new easier format for each booking
+    for booking in jsonBookings['data']['bookings']['nodes']:
+        formattedBookings.append(formatBookingData(booking))
+
+    # Split the bookings into confirmed and rejected
+    confirmedBookings = []
+    rejectedBookings = []
+    for booking in formattedBookings:
+        if booking['bookingState'] == 'confirmed':
+            confirmedBookings.append(booking)
+        else:
+            rejectedBookings.append(booking)
+    logging.log(logging.INFO, f"Confirmed bookings: {len(confirmedBookings)}")
+    logging.log(logging.INFO, f"Rejected bookings: {len(rejectedBookings)}")
+
+    # Sort the confirmedBookings by the earliest reservation start time
+    confirmedBookings.sort(key=lambda x: get_start_time(get_earliest_reservation(x['reservations'])))
+
+    # Combine the confirmed and rejected bookings into one list
+    return (confirmedBookings + rejectedBookings)
+    
+
+def processBookingTypes(jsonBookingTypes):
+    proccessedData = []
+    numBookingTypes = len(jsonBookingTypes['data']['bookingTypes']['nodes'])
+    logging.log(logging.INFO, f"Found {numBookingTypes} booking types")
+    
+    for bookingType in jsonBookingTypes['data']['bookingTypes']['nodes']:
+        bookingType = {"ID": bookingType['id'], "name": bookingType['name'], "position": bookingType['position'], "description": bookingType['description']}
+        proccessedData.append(bookingType)
+    return proccessedData

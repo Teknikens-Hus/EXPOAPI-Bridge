@@ -1,5 +1,8 @@
-from process_data_response import process_data
-from get_data_from_expo import request_data_from_graphql
+from process_booking_response import processCombinedData
+from process_booking_response import processBookingTypes
+from process_booking_response import processBookings
+from get_data_from_expo import request_bookings_from_graphql
+from get_data_from_expo import request_bookingTypes_from_graphql
 from mqtt_publish import MQTTClient
 import time
 
@@ -45,13 +48,24 @@ if not token or not endpoint:
         json.dump({"error": error_message}, outfile, indent=4)
 else:
     start_date, end_date = calculate_start_end_dates(days_forward, days_backward)
-    newdata = request_data_from_graphql(start_date, end_date, token, endpoint)
+    newBookingTypes = request_bookingTypes_from_graphql(token, endpoint)
+    newBookings = request_bookings_from_graphql(start_date, end_date, token, endpoint)
+    finalData = {"error": "Something went wrong. Please check the logs."}
     # Only process the data if there is no error
-    if 'error' not in newdata:
-        newdata = process_data(newdata)
+    if 'error' not in newBookings and 'error' not in newBookingTypes:
+        finalData = processCombinedData(newBookings, newBookingTypes)
+    else:
+        if 'error' in newBookings and 'error' in newBookingTypes:
+            finalData = {}
+            finalData.update(newBookings)
+            finalData.update(newBookingTypes)
+        elif 'error' in newBookings:
+            finalData = newBookings
+        elif 'error' in newBookingTypes:
+            finalData = newBookingTypes
     # Save the new data to a file
     with open(file_path, 'w') as outfile:
-        json.dump(newdata, outfile)
+        json.dump(finalData, outfile)
 
 # Publish data to MQTT if enabled in environment variables
 if(mqtt_enabled == 'true'):
@@ -62,9 +76,8 @@ if(mqtt_enabled == 'true'):
             time.sleep(1)
             logging.log(logging.INFO, "Waiting for MQTT client to connect...")
         # Publish the data to the MQTT broker
-        with open(file_path, 'r') as file:
-            data = json.load(file)
-            mqtt_client.publish("current_bookings", json.dumps(data))
+        mqtt_client.publish("current_bookings", json.dumps(processBookings(newBookings)))
+        mqtt_client.publish("current_booking_types", json.dumps(processBookingTypes(newBookingTypes)))
         # Wait for confirmation that the data was published
         while not mqtt_client.mqtt_message_sent:
             time.sleep(1)
