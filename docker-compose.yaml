@@ -9,7 +9,7 @@ services:
       DAYS_FORWARD: "7"
       DAYS_BACKWARD: "0"
       CRON_SCHEDULE: "* * * * *"
-      MQTT_ENABLED: "true"
+      MQTT_ENABLED: ${MQTT_ENABLED}
       MQTT_HOST: ${MQTT_HOST}
       MQTT_PORT: ${MQTT_PORT}
       MQTT_USERNAME: ${MQTT_USERNAME}

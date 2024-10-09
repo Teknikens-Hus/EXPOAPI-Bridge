@@ -1,6 +1,8 @@
 from process_booking_response import processCombinedData
 from process_booking_response import processBookingTypes
 from process_booking_response import processBookings
+from process_booking_response import filterBookingsOfType
+from process_booking_response import filterOutRejectedBookings
 from get_data_from_expo import request_bookings_from_graphql
 from get_data_from_expo import request_bookingTypes_from_graphql
 from mqtt_publish import MQTTClient
@@ -76,8 +78,12 @@ if(mqtt_enabled == 'true'):
             time.sleep(1)
             logging.log(logging.INFO, "Waiting for MQTT client to connect...")
         # Publish the data to the MQTT broker
-        mqtt_client.publish("current_bookings", json.dumps(processBookings(newBookings)))
-        mqtt_client.publish("current_booking_types", json.dumps(processBookingTypes(newBookingTypes)))
+        processedBookingTypes = processBookingTypes(newBookingTypes)
+        processedConfirmedBookings = (filterOutRejectedBookings(processBookings(newBookings)))
+        for bookingType in processedBookingTypes:
+            bookingsOfType = filterBookingsOfType(processedConfirmedBookings, bookingType['name'])
+            mqtt_client.publish("bookings/" + str(bookingType['ID']), json.dumps(bookingsOfType))
+        mqtt_client.publish("bookingTypes", json.dumps(processBookingTypes(newBookingTypes)))
         # Wait for confirmation that the data was published
         while not mqtt_client.mqtt_message_sent:
             time.sleep(1)

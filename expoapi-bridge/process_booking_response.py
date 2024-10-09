@@ -33,6 +33,22 @@ def get_current_time():
     # Get and format the current date and time in ISO 8601 format, ensuring it's in UTC (like other expo dates in GraphQL)
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
+def filterBookingsOfType(bookings, bookingType):
+    ### Takes in a list of processed bookings and a bookingType name (string) and returns a list of bookings of that type
+    filteredBookings = []
+    for booking in bookings:
+        if booking['bookingType'] == bookingType:
+            filteredBookings.append(booking)
+    return filteredBookings
+
+def filterOutRejectedBookings(bookings):
+    ### Takes in a list of processed bookings and returns a list of only confirmed bookings
+    filteredBookings = []
+    for booking in bookings:
+        if booking['bookingState'] == 'confirmed':
+            filteredBookings.append(booking)
+    return filteredBookings
+
 ### Creates a new booking in the new easier format
 def formatBookingData(booking):
     bookingID = booking['humanNumber']
