@@ -13,9 +13,13 @@ file_path = '/home/app/expoapi-bridge/processed_data.json'
 
 class SingleFileHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
-        if self.path == '/' or self.path == '/processed_data.json':
-            self.path = '/' + FILE_TO_SERVE
-        return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        try:
+            if self.path == '/' or self.path == '/processed_data.json':
+                self.path = '/' + FILE_TO_SERVE
+            return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        except Exception as e:
+            logging.error("Error handling request: %s", e)
+            self.send_error(500, "Internal Server Error")
 
     def end_headers(self):
         # Set headers to prevent caching since the file is constantly updated
