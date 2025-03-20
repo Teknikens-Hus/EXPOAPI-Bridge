@@ -1,5 +1,5 @@
 query GetBookings($startAtGteq: DateTime!, $endAtLteq: DateTime! $cursor: String) {
-  bookings(search: {reservationsEventStartAtGteq: $startAtGteq, reservationsEventEndAtLteq: $endAtLteq, cursor: $cursor}) {
+  bookings(search: {reservationsEventStartAtGteq: $startAtGteq, reservationsEventEndAtLteq: $endAtLteq} after: $cursor) {
     totalNodeCount,
     totalPageCount,
     pageInfo {
