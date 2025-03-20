@@ -63,22 +63,23 @@ def formatBookingData(booking):
     internalComment = booking['internalComment']
     bookingType = booking['bookingType']['name']
     organisation = booking['organisation']
+    # Get booker data
+    booker = booking.get('booker') or {}
+    customer = booker.get('customer') or {}
+    customerName = customer.get('name',"")
+    customerType = customer.get('customerType',{}).get('name',"")
     # Format reservation data
     reservations = []
     for reservation in booking['reservations']['nodes']:
-        startTime = reservation['startAt']
-        endTime = reservation['endAt']
-        contract = None
-        # Reservations
-        event = reservation['event']
-        offer = event['offer']['name']
-        if(reservation['contract'] != None):
-             contract = reservation['contract']['name']
+        offer = reservation['offer']['name']
+        reservationtable = reservation['reservationable']
+        # Get reservation data
+        reservationType = reservationtable['__typename']
         # Format attendees data
         attendees = {"Attendees": 0}
-        if(reservation['attendees']['totalNodeCount'] != 0):
+        if(reservationtable['attendees']['totalNodeCount'] != 0):
             tempAttendees = {}
-            for attendee in reservation['attendees']['nodes']:
+            for attendee in reservationtable['attendees']['nodes']:
                 attendeeType = attendee['attendeeType']['name']
                 if attendeeType in tempAttendees:
                     tempAttendees[attendeeType] += 1
@@ -86,6 +87,12 @@ def formatBookingData(booking):
                     tempAttendees[attendeeType] = 1
             # Set formated attendee data
             attendees = tempAttendees
+        # Events
+        event = reservationtable['event']
+        startTime = event['startAt']
+        endTime = event['endAt']
+        #if(reservation['contract'] != None):
+        #     contract = reservation['contract']['name']
         resources = []
         if(event['eventAllocation'] != None):
              if event['eventAllocation']['eventAllocationResources']['totalNodeCount'] != 0:
@@ -96,9 +103,10 @@ def formatBookingData(booking):
                     resources.append(newResource)
         else:
             resources = None
+        contract = None # Since API 3 cant seem to find how i retrieve this data
         # Set reservation data
-        reservations.append({"startTime": startTime, "endTime": endTime, "contract": contract, "attendees": attendees, "resources": resources})
-    return {"bookingID": bookingID, "bookingState": bookingState, "firstName": firstName, "lastName": lastName, "email": email, "messageFromBooker": messageFromBooker, "externalComment": externalComment, "internalComment": internalComment, "bookingType": bookingType, "organisation": organisation, "reservations": reservations}
+        reservations.append({"reservationType": reservationType, "startTime": startTime, "endTime": endTime, "contract": contract, "offer": offer, "attendees": attendees, "resources": resources})
+    return {"bookingID": bookingID, "bookingState": bookingState, "firstName": firstName, "lastName": lastName, "email": email, "messageFromBooker": messageFromBooker, "externalComment": externalComment, "internalComment": internalComment, "bookingType": bookingType, "organisation": organisation, "customerName": customerName, "customerType": customerType,  "reservations": reservations}
 
 def processBookings(jsonBookings):
     formattedBookings = []
@@ -133,6 +141,6 @@ def processBookingTypes(jsonBookingTypes):
     logging.log(logging.INFO, f"Found {numBookingTypes} booking types")
     
     for bookingType in jsonBookingTypes['data']['bookingTypes']['nodes']:
-        bookingType = {"ID": bookingType['id'], "name": bookingType['name'], "position": bookingType['position'], "description": bookingType['description']}
+        bookingType = {"ID": bookingType['id'], "name": bookingType['name'], "description": bookingType['description']}
         proccessedData.append(bookingType)
     return proccessedData

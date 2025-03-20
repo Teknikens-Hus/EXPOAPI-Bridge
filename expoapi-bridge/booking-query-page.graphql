@@ -1,5 +1,5 @@
 query GetBookings($startAtGteq: DateTime!, $endAtLteq: DateTime! $cursor: String) {
-  bookings(search: {reservationsStartAtGteq: $startAtGteq, reservationsEndAtLteq: $endAtLteq} after: $cursor) {
+  bookings(search: {reservationsEventStartAtGteq: $startAtGteq, reservationsEventEndAtLteq: $endAtLteq, cursor: $cursor}) {
     totalNodeCount,
     totalPageCount,
     pageInfo {
@@ -22,42 +22,69 @@ query GetBookings($startAtGteq: DateTime!, $endAtLteq: DateTime! $cursor: String
       updatedAt
       bookingType {
         name
-        position
+      }
+      booker{
+        customer{name, customerType{name}}
+        title{name}
       }
       reservations {
         nodes {
-          startAt
-          endAt
-          contract {
+          offer{
             name
           }
-          attendees {
-            totalNodeCount
-            nodes {
-              attendeeType {
-                name
-              }
-            }
-          }
-          event {
-            name
-            startAt
-            endAt
-            eventAllocation {
-              eventAllocationResources {
+          reservationable{
+            __typename
+          	... on ProgramReservation{
+              attendees{
                 totalNodeCount
-                nodes {
-                  resource {
+                nodes{
+                  attendeeType{
                     name
-                    resourceType {
-                      name
+                  }
+                }
+              }
+              event{
+                name
+                startAt
+                endAt
+                eventAllocation{
+                  eventAllocationResources{
+                    totalNodeCount
+                    nodes{
+                      resource{
+                        name
+                        resourceType{name}
+                      }
                     }
                   }
                 }
               }
             }
-            offer {
-              name
+            ... on AdmissionReservation{
+              attendees{
+                totalNodeCount
+                nodes{
+                  attendeeType{
+                    name
+                  }
+                }
+              }
+              event{
+                name
+                startAt
+                endAt
+                eventAllocation{
+                  eventAllocationResources{
+                    totalNodeCount
+                    nodes{
+                      resource{
+                        name
+                        resourceType{name}
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }

@@ -11,7 +11,6 @@ query GetBookingTypes($cursor: String){
     nodes{
       id
       name
-      position
       description
     }
   }

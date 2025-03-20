@@ -11,7 +11,6 @@ query GetBookingTypes{
     nodes{
       id
       name
-      position
       description
     }
   }
