@@ -51,7 +51,8 @@ def filterOutRejectedBookings(bookings):
 
 ### Creates a new booking in the new easier format
 def formatBookingData(booking):
-    bookingID = booking['humanNumber']
+    humanNumber = booking['humanNumber']
+    bookingID = booking['id']
     bookingState = booking['state']
     #if(bookingState != 'confirmed'):
     #     return {"bookingID": bookingID, "bookingState": bookingState}
@@ -106,7 +107,7 @@ def formatBookingData(booking):
         contract = None # Since API 3 cant seem to find how i retrieve this data
         # Set reservation data
         reservations.append({"reservationType": reservationType, "startTime": startTime, "endTime": endTime, "contract": contract, "offer": offer, "attendees": attendees, "resources": resources})
-    return {"bookingID": bookingID, "bookingState": bookingState, "firstName": firstName, "lastName": lastName, "email": email, "messageFromBooker": messageFromBooker, "externalComment": externalComment, "internalComment": internalComment, "bookingType": bookingType, "organisation": organisation, "customerName": customerName, "customerType": customerType,  "reservations": reservations}
+    return {"humanNumber": humanNumber, "bookingID": bookingID, "bookingState": bookingState, "firstName": firstName, "lastName": lastName, "email": email, "messageFromBooker": messageFromBooker, "externalComment": externalComment, "internalComment": internalComment, "bookingType": bookingType, "organisation": organisation, "customerName": customerName, "customerType": customerType,  "reservations": reservations}
 
 def processBookings(jsonBookings):
     formattedBookings = []

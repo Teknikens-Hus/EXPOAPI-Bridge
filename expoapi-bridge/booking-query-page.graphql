@@ -10,6 +10,7 @@ query GetBookings($startAtGteq: DateTime!, $endAtLteq: DateTime! $cursor: String
     }
     nodes {
       humanNumber
+      id
       state
       firstName
       lastName
