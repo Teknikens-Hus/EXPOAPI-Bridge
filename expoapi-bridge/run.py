@@ -3,8 +3,7 @@ from process_booking_response import processBookingTypes
 from process_booking_response import processBookings
 from process_booking_response import filterBookingsOfType
 from process_booking_response import filterOutRejectedBookings
-from get_data_from_expo import request_bookings_from_graphql
-from get_data_from_expo import request_bookingTypes_from_graphql
+from get_data_from_expo import request_data_from_graphql
 from mqtt_publish import MQTTClient
 import time
 
@@ -50,21 +49,19 @@ if not token or not endpoint:
         json.dump({"error": error_message}, outfile, indent=4)
 else:
     start_date, end_date = calculate_start_end_dates(days_forward, days_backward)
-    newBookingTypes = request_bookingTypes_from_graphql(token, endpoint)
-    newBookings = request_bookings_from_graphql(start_date, end_date, token, endpoint)
+    newBookingTypes = request_data_from_graphql(token, endpoint, 'bookingTypes')
+    newPrograms = request_data_from_graphql(token, endpoint, 'programs')
+    newBookings = request_data_from_graphql(token, endpoint, 'bookings', start_date, end_date)
     finalData = {"error": "Something went wrong. Please check the logs."}
     # Only process the data if there is no error
-    if 'error' not in newBookings and 'error' not in newBookingTypes:
-        finalData = processCombinedData(newBookings, newBookingTypes)
+    if 'error' not in newBookings and 'error' not in newBookingTypes and 'error' not in newPrograms:
+        finalData = processCombinedData(newBookings, newBookingTypes, newPrograms)
     else:
-        if 'error' in newBookings and 'error' in newBookingTypes:
-            finalData = {}
-            finalData.update(newBookings)
-            finalData.update(newBookingTypes)
-        elif 'error' in newBookings:
-            finalData = newBookings
-        elif 'error' in newBookingTypes:
-            finalData = newBookingTypes
+        finalData = {}
+        for json in [newBookings, newBookingTypes, newPrograms]:
+            if 'error' in json:
+                logging.log(logging.ERROR, json['error'])
+                finalData.update(json)
     # Save the new data to a file
     with open(file_path, 'w') as outfile:
         json.dump(finalData, outfile)

@@ -1,0 +1,17 @@
+query GetPrograms($cursor: String!) {
+  programs(after: $cursor) {
+    totalNodeCount
+    totalPageCount
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
+    nodes {
+      name
+      id
+      color
+    }
+  }
+}

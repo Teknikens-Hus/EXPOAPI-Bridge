@@ -4,16 +4,17 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-def processCombinedData(jsonBookings, jsonBookingTypes):
+def processCombinedData(jsonBookings, jsonBookingTypes, jsonPrograms):
     allBookingTypes = processBookingTypes(jsonBookingTypes)
     allBookings = processBookings(jsonBookings)
+    allPrograms = processPrograms(jsonPrograms)
    
-    return_data = {"fetched_timestamp": get_current_time(), "bookingTypes": allBookingTypes, "bookings": allBookings}
+    return_data = {"fetched_timestamp": get_current_time(), "bookingTypes": allBookingTypes, "programs": allPrograms, "bookings": allBookings}
     
     # Check the data
     try:
         json.dumps(return_data)
-        return return_data
+        return return_data # Data was good, return it
     except (TypeError, ValueError) as e:
         logging.ERROR(logging.ERROR, f"Error: {e}")
         logging.ERROR(logging.ERROR, f"Data: {return_data}")
@@ -144,4 +145,13 @@ def processBookingTypes(jsonBookingTypes):
     for bookingType in jsonBookingTypes['data']['bookingTypes']['nodes']:
         bookingType = {"ID": bookingType['id'], "name": bookingType['name'], "description": bookingType['description']}
         proccessedData.append(bookingType)
+    return proccessedData
+
+def processPrograms(jsonPrograms):
+    proccessedData = []
+    numPrograms = len(jsonPrograms['data']['programs']['nodes'])
+    logging.log(logging.INFO, f"Found {numPrograms} programs")
+    for program in jsonPrograms['data']['programs']['nodes']:
+        programObject = {"id": program['id'], "name": program['name'], "color": program['color']}
+        proccessedData.append(programObject)
     return proccessedData

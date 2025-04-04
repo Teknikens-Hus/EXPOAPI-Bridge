@@ -18,7 +18,7 @@ env:
 
 jobs:
   docker:
-    runs-on: ubuntu-latest
+    runs-on: on-prem-arc-runner-set
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
