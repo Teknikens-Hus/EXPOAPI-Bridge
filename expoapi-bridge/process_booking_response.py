@@ -99,7 +99,8 @@ def formatBookingData(booking):
         if(event['eventAllocation'] != None):
              if event['eventAllocation']['eventAllocationResources']['totalNodeCount'] != 0:
                 for resource in event['eventAllocation']['eventAllocationResources']['nodes']:
-                    resourceType = resource['resource']['resourceType']['name']
+                    resourceTypeData = resource['resource']['resourceType']
+                    resourceType = resourceTypeData['name'] if resourceTypeData is not None else None
                     resourceName = resource['resource']['name']
                     newResource = {"type": resourceType, "name": resourceName}
                     resources.append(newResource)
